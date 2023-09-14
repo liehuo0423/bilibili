@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bilibili.mapper.AuthRoleMenuMapper">
+    <resultMap id="authRoleMenuResultMap" type="com.bilibili.domain.auth.AuthRoleMenu">
+        <id column="id" property="id"/>
+        <id column="roleId" property="roleId"/>
+        <id column="menuId" property="menuId"/>
+        <association property="authMenu" javaType="com.bilibili.domain.auth.AuthMenu">
+            <id column="name" property="name"/>
+            <id column="code" property="code"/>
+        </association>
+    </resultMap>
+    <select id="getAuthRoleMenuByRoleIds"
+            parameterType="java.util.Set"
+            resultMap="authRoleMenuResultMap">
+        select
+        tarm.*,tam.code,tam.name
+        from t_auth_role_menu tarm
+        left join t_auth_menu tam
+        on tam.id = tarm.menuId
+        where tarm.roleId in
+        <foreach collection="roleIds" item="roleId" separator="," open="(" close=")">
+            #{roleId}
+        </foreach>
+    </select>
+
+</mapper>

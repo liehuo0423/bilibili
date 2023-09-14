@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bilibili.mapper.UserMapper">
+    <update id="updateUserInfos" parameterType="com.bilibili.domain.UserInfo">
+        update t_user_info
+        <set>
+            <if test="nick != null and nick !='' ">
+                nick = #{nick},
+            </if>
+            <if test="avatar != null">
+                avatar = #{avatar},
+            </if>
+            <if test="sign != null">
+                sign = #{sign},
+            </if>
+            <if test="birth != null and birth != ''">
+                birth = #{birth},
+            </if>
+            <if test="gender != null and gender != ''">
+                gender = #{gender},
+            </if>
+            updateTime = #{updateTime}
+        </set>
+        <where>
+            userId = #{usrId}
+        </where>
+    </update>
+    <delete id="deleteRefreshToken">
+        delete
+        from t_refresh_token
+        where refreshToken = #{refreshToken};
+    </delete>
+    <select id="getUserByPhone" resultType="com.bilibili.domain.User">
+        select *
+        from t_user
+        where phone = #{phone}
+    </select>
+    <select id="getUserById" resultType="com.bilibili.domain.User">
+        select *
+        from t_user
+        where id = #{id}
+    </select>
+    <select id="getUserInfoByUserId" resultType="com.bilibili.domain.UserInfo">
+        select *
+        from t_user_info
+        where userId = #{userId};
+    </select>
+    <select id="getUserInfoByUserIds" resultType="com.bilibili.domain.UserInfo">
+        select *
+        from t_user_info
+        <where>
+            <if test="userIdList != null and userIdList.size()>0">
+                userId in
+                <foreach collection="userIdList" item="userId" open="(" close=")" separator=",">
+                    #{userId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+    <select id="getUserFollowings" resultType="com.bilibili.domain.UserFollowing">
+        select *
+        from t_user_following
+        where userId = #{userId};
+    </select>
+    <select id="pageCountUserInfos" resultType="java.lang.Integer">
+        select
+        count(1)
+        from t_user_info
+        <where>
+            <if test="nick != null and nick != ''">
+                nick like '%${nick}%'
+            </if>
+        </where>
+    </select>
+    <select id="pageListUserInfos" parameterType="java.util.Map" resultType="com.bilibili.domain.UserInfo">
+        select *
+        from t_user_info
+        <where>
+            <if test="nick != null and nick != ''">
+                nick like '%${nick}%'
+            </if>
+        </where>
+        order by id desc
+        limit #{start},#{size}
+
+    </select>
+    <select id="getRefreshTokenDetail" resultType="com.bilibili.domain.RefreshToken">
+        select *
+        from t_refresh_token
+        where refreshToken = #{refreshToken};
+    </select>
+    <insert id="addUser" parameterType="com.bilibili.domain.User" useGeneratedKeys="true" keyProperty="id">
+        insert into t_user (phone, password, salt, createTime)
+        values (#{phone},
+                #{password},
+                #{salt},
+                #{createTime})
+    </insert>
+    <insert id="addUserInfo" parameterType="com.bilibili.domain.UserInfo">
+        insert into t_user_info (userId, gender, birth, nick, createTime)
+        VALUES (#{userId},
+                #{gender},
+                #{birth},
+                #{nick},
+                #{createTime})
+    </insert>
+    <insert id="addRefreshToken">
+        insert into t_refresh_token(userId, refreshToken, createTime)
+        values (#{userId}, #{refreshToken}, #{createTime})
+    </insert>
+</mapper>
