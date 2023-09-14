@@ -1,11 +1,10 @@
 package com.bilibili.controller;
 
 import com.bilibili.service.DemoService;
+import com.bilibili.utils.FastDFSUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author 于鑫瑞
@@ -16,8 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class DemoController {
     @Autowired
     private DemoService demoService;
+    @Autowired
+    private FastDFSUtil fastDFSUtil;
     @GetMapping("{id}")
     public Long query(@PathVariable Long id){
         return demoService.query(id);
+    }
+    @PostMapping("/slices")
+    public void slices(@RequestBody MultipartFile file) throws Exception {
+        fastDFSUtil.convertFileToSlices(file);
     }
 }
