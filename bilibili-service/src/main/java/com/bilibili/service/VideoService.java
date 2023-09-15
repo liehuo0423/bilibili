@@ -1,8 +1,11 @@
 package com.bilibili.service;
 
+import com.bilibili.domain.PageResult;
 import com.bilibili.domain.Video;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.List;
 
@@ -13,4 +16,10 @@ import java.util.List;
 public interface VideoService {
     @Transactional
     public void addVideos(Video video);
+
+    PageResult<Video> pageListVideos(Integer size, Integer no, String area);
+
+    void viewVideoOnlineBySlices(HttpServletRequest request,
+                                 HttpServletResponse response,
+                                 String url) throws Exception;
 }
