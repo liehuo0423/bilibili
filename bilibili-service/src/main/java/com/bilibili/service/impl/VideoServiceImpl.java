@@ -2,6 +2,7 @@ package com.bilibili.service.impl;
 
 import com.bilibili.domain.PageResult;
 import com.bilibili.domain.Video;
+import com.bilibili.domain.VideoLike;
 import com.bilibili.domain.VideoTag;
 import com.bilibili.domain.exception.ConditionException;
 import com.bilibili.mapper.VideoMapper;
@@ -62,5 +63,38 @@ public class VideoServiceImpl implements VideoService {
     @Override
     public void viewVideoOnlineBySlices(HttpServletRequest request, HttpServletResponse response, String url) throws Exception {
         fastDFSUtil.viewVideoOnlineBySlices(request,response,url);
+    }
+
+    @Override
+    public void addVideoLike(Long videoId, Long userId) {
+        Video video = videoMapper.getVideoById(videoId);
+        if(video == null){
+            throw new ConditionException("非法视频！");
+        }
+        VideoLike videoLike = videoMapper.getVideoLikeByVideoIdAndUserId(videoId, userId);
+        if(videoLike != null){
+            throw new ConditionException("已经赞过！");
+        }
+        videoLike = new VideoLike();
+        videoLike.setVideoId(videoId);
+        videoLike.setUserId(userId);
+        videoLike.setCreateTime(new Date());
+        videoMapper.addVideoLike(videoLike);
+    }
+
+    @Override
+    public void deleteVideoLike(Long videoId, Long userId) {
+        videoMapper.deleteVideoLike(videoId, userId);
+    }
+
+    @Override
+    public Map<String, Object> getVideoLikes(Long videoId, Long userId) {
+        Long count = videoMapper.getVideoLikes(videoId);
+        VideoLike videoLike = videoMapper.getVideoLikeByVideoIdAndUserId(videoId, userId);
+        boolean like = videoLike != null;
+        Map<String, Object> result = new HashMap<>();
+        result.put("count", count);
+        result.put("like", like);
+        return result;
     }
 }

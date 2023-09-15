@@ -6,14 +6,11 @@ import com.bilibili.domain.Response;
 import com.bilibili.domain.Video;
 import com.bilibili.service.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
+import java.util.Map;
 
 /**
  * @author 于鑫瑞
@@ -39,8 +36,41 @@ public class VideoController {
        return new Response<>(result);
     }
 
-    @GetMapping("video-slices")
+    @GetMapping("/video-slices")
     public void viewVideoOnlineBySlices(HttpServletRequest request, HttpServletResponse response,String url) throws Exception {
         videoService.viewVideoOnlineBySlices(request,response,url);
+    }
+
+    /**
+     * 点赞视频
+     */
+    @PostMapping("/video-likes")
+    public Response<String> addVideoLike(@RequestParam Long videoId){
+        Long userId = userSupport.getCurrentUserId();
+        videoService.addVideoLike(videoId, userId);
+        return Response.success();
+    }
+
+    /**
+     * 取消点赞视频
+     */
+    @DeleteMapping("/video-likes")
+    public Response<String> deleteVideoLike(@RequestParam Long videoId){
+        Long userId = userSupport.getCurrentUserId();
+        videoService.deleteVideoLike(videoId, userId);
+        return Response.success();
+    }
+
+    /**
+     * 查询视频点赞数量
+     */
+    @GetMapping("/video-likes")
+    public Response<Map<String, Object>> getVideoLikes(@RequestParam Long videoId){
+        Long userId = null;
+        try{
+            userId = userSupport.getCurrentUserId();
+        }catch (Exception ignored){}
+        Map<String, Object> result = videoService.getVideoLikes(videoId, userId);
+        return new Response<>(result);
     }
 }

@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 于鑫瑞
@@ -22,4 +23,10 @@ public interface VideoService {
     void viewVideoOnlineBySlices(HttpServletRequest request,
                                  HttpServletResponse response,
                                  String url) throws Exception;
+
+    void addVideoLike(Long videoId, Long userId);
+
+    void deleteVideoLike(Long videoId, Long userId);
+
+    Map<String, Object> getVideoLikes(Long videoId, Long userId);
 }
