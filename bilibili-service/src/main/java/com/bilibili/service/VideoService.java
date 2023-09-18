@@ -2,6 +2,7 @@ package com.bilibili.service;
 
 import com.bilibili.domain.PageResult;
 import com.bilibili.domain.Video;
+import com.bilibili.domain.VideoCollection;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,4 +30,10 @@ public interface VideoService {
     void deleteVideoLike(Long videoId, Long userId);
 
     Map<String, Object> getVideoLikes(Long videoId, Long userId);
+
+    void addVideoCollection(VideoCollection videoCollection, Long userId);
+
+    void deleteVideoCollection(Long videoId, Long userId);
+
+    Map<String, Object> getVideoCollections(Long videoId, Long userId);
 }

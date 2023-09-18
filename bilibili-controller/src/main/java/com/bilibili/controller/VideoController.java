@@ -4,6 +4,7 @@ import com.bilibili.controller.support.UserSupport;
 import com.bilibili.domain.PageResult;
 import com.bilibili.domain.Response;
 import com.bilibili.domain.Video;
+import com.bilibili.domain.VideoCollection;
 import com.bilibili.service.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -73,4 +74,39 @@ public class VideoController {
         Map<String, Object> result = videoService.getVideoLikes(videoId, userId);
         return new Response<>(result);
     }
+
+    /**
+     * 收藏视频
+     */
+    @PostMapping("/video-collections")
+    public Response<String> addVideoCollection(@RequestBody VideoCollection videoCollection){
+        Long userId = userSupport.getCurrentUserId();
+        videoService.addVideoCollection(videoCollection, userId);
+        return Response.success();
+    }
+
+    /**
+     * 取消收藏视频
+     */
+    @DeleteMapping("/video-collections")
+    public Response<String> deleteVideoCollection(@RequestParam Long videoId){
+        Long userId = userSupport.getCurrentUserId();
+        videoService.deleteVideoCollection(videoId, userId);
+        return Response.success();
+    }
+
+    /**
+     * 查询视频收藏数量
+     */
+    @GetMapping("/video-collections")
+    public Response<Map<String, Object>> getVideoCollections(@RequestParam Long videoId){
+        Long userId = null;
+        try{
+            userId = userSupport.getCurrentUserId();
+        }catch (Exception ignored){}
+        Map<String, Object> result = videoService.getVideoCollections(videoId, userId);
+        return new Response<>(result);
+    }
+
+
 }

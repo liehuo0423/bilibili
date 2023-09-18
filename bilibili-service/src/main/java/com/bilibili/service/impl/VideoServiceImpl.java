@@ -1,9 +1,6 @@
 package com.bilibili.service.impl;
 
-import com.bilibili.domain.PageResult;
-import com.bilibili.domain.Video;
-import com.bilibili.domain.VideoLike;
-import com.bilibili.domain.VideoTag;
+import com.bilibili.domain.*;
 import com.bilibili.domain.exception.ConditionException;
 import com.bilibili.mapper.VideoMapper;
 import com.bilibili.service.VideoService;
@@ -92,6 +89,42 @@ public class VideoServiceImpl implements VideoService {
         Long count = videoMapper.getVideoLikes(videoId);
         VideoLike videoLike = videoMapper.getVideoLikeByVideoIdAndUserId(videoId, userId);
         boolean like = videoLike != null;
+        Map<String, Object> result = new HashMap<>();
+        result.put("count", count);
+        result.put("like", like);
+        return result;
+    }
+
+    @Override
+    @Transactional
+    public void addVideoCollection(VideoCollection videoCollection, Long userId) {
+        Long videoId = videoCollection.getVideoId();
+        Long groupId = videoCollection.getGroupId();
+        if(videoId == null || groupId == null){
+            throw new ConditionException("参数异常！");
+        }
+        Video video = videoMapper.getVideoById(videoId);
+        if(video == null){
+            throw new ConditionException("非法视频！");
+        }
+        //删除原有视频收藏
+        videoMapper.deleteVideoCollection(videoId, userId);
+        //添加新的视频收藏
+        videoCollection.setUserId(userId);
+        videoCollection.setCreateTime(new Date());
+        videoMapper.addVideoCollection(videoCollection);
+    }
+
+    @Override
+    public void deleteVideoCollection(Long videoId, Long userId) {
+        videoMapper.deleteVideoCollection(videoId, userId);
+    }
+
+    @Override
+    public Map<String, Object> getVideoCollections(Long videoId, Long userId) {
+        Long count = videoMapper.getVideoCollections(videoId);
+        VideoCollection videoCollection = videoMapper.getVideoCollectionByVideoIdAndUserId(videoId, userId);
+        boolean like = videoCollection != null;
         Map<String, Object> result = new HashMap<>();
         result.put("count", count);
         result.put("like", like);
