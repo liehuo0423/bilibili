@@ -149,4 +149,13 @@ public class VideoController {
         return new Response<>(result);
     }
 
+    /**
+     * 获取视频详情
+     */
+    @GetMapping("/video-details")
+    public Response<Map<String, Object>> getVideoDetails(@RequestParam Long videoId){
+        Map<String, Object> result = videoService.getVideoDetails(videoId);
+        return new Response<>(result);
+    }
+
 }

@@ -245,4 +245,16 @@ public class VideoServiceImpl implements VideoService {
         }
         return new PageResult<>(total, list);
     }
+
+    @Override
+    public Map<String, Object> getVideoDetails(Long videoId) {
+        Video video =  videoMapper.getVideoDetails(videoId);
+        Long userId = video.getUserId();
+        User user = userService.getUserInfo(userId);
+        UserInfo userInfo = user.getUserInfo();
+        Map<String, Object> result = new HashMap<>();
+        result.put("video", video);
+        result.put("userInfo", userInfo);
+        return result;
+    }
 }
