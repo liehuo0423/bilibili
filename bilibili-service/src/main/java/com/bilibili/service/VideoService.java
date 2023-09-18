@@ -2,6 +2,7 @@ package com.bilibili.service;
 
 import com.bilibili.domain.PageResult;
 import com.bilibili.domain.Video;
+import com.bilibili.domain.VideoCoin;
 import com.bilibili.domain.VideoCollection;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,4 +37,8 @@ public interface VideoService {
     void deleteVideoCollection(Long videoId, Long userId);
 
     Map<String, Object> getVideoCollections(Long videoId, Long userId);
+
+    void addVideoCoins(VideoCoin videoCoin, Long userId);
+
+    Map<String, Object> getVideoCoins(Long videoId, Long userId);
 }

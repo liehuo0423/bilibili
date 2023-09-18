@@ -1,9 +1,6 @@
 package com.bilibili.mapper;
 
-import com.bilibili.domain.Video;
-import com.bilibili.domain.VideoCollection;
-import com.bilibili.domain.VideoLike;
-import com.bilibili.domain.VideoTag;
+import com.bilibili.domain.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -44,4 +41,13 @@ public interface VideoMapper {
 
     VideoCollection getVideoCollectionByVideoIdAndUserId(@Param("videoId") Long videoId,
                                                          @Param("userId") Long userId);
+
+    VideoCoin getVideoCoinByVideoIdAndUserId(@Param("videoId") Long videoId,
+                                             @Param("userId") Long userId);
+
+    void addVideoCoin(VideoCoin videoCoin);
+
+    void updateVideoCoin(VideoCoin videoCoin);
+
+    Long getVideoCoinsAmount(Long videoId);
 }

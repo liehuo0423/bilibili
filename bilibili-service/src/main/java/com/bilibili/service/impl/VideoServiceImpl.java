@@ -3,6 +3,7 @@ package com.bilibili.service.impl;
 import com.bilibili.domain.*;
 import com.bilibili.domain.exception.ConditionException;
 import com.bilibili.mapper.VideoMapper;
+import com.bilibili.service.UserCoinService;
 import com.bilibili.service.VideoService;
 import com.bilibili.utils.FastDFSUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,9 @@ public class VideoServiceImpl implements VideoService {
     private VideoMapper videoMapper;
     @Autowired
     private FastDFSUtil fastDFSUtil;
+
+    @Autowired
+    private UserCoinService userCoinService;
 
     @Override
     @Transactional
@@ -124,6 +128,55 @@ public class VideoServiceImpl implements VideoService {
     public Map<String, Object> getVideoCollections(Long videoId, Long userId) {
         Long count = videoMapper.getVideoCollections(videoId);
         VideoCollection videoCollection = videoMapper.getVideoCollectionByVideoIdAndUserId(videoId, userId);
+        boolean like = videoCollection != null;
+        Map<String, Object> result = new HashMap<>();
+        result.put("count", count);
+        result.put("like", like);
+        return result;
+    }
+
+    @Override
+    @Transactional
+    public void addVideoCoins(VideoCoin videoCoin, Long userId) {
+        Long videoId = videoCoin.getVideoId();
+        Integer amount = videoCoin.getAmount();
+        if(videoId == null){
+            throw new ConditionException("参数异常！");
+        }
+        Video video = videoMapper.getVideoById(videoId);
+        if(video == null){
+            throw new ConditionException("非法视频！");
+        }
+        //查询当前登录用户是否拥有足够的硬币
+        Integer userCoinsAmount = userCoinService.getUserCoinsAmount(userId);
+        userCoinsAmount = userCoinsAmount == null ? 0 : userCoinsAmount;
+        if(amount > userCoinsAmount){
+            throw new ConditionException("硬币数量不足！");
+        }
+        //查询当前登录用户对该视频已经投了多少硬币
+        VideoCoin dbVideoCoin = videoMapper.getVideoCoinByVideoIdAndUserId(videoId, userId);
+        //新增视频投币
+        if(dbVideoCoin == null){
+            videoCoin.setUserId(userId);
+            videoCoin.setCreateTime(new Date());
+            videoMapper.addVideoCoin(videoCoin);
+        }else{
+            Integer dbAmount = dbVideoCoin.getAmount();
+            dbAmount += amount;
+            //更新视频投币
+            videoCoin.setUserId(userId);
+            videoCoin.setAmount(dbAmount);
+            videoCoin.setUpdateTime(new Date());
+            videoMapper.updateVideoCoin(videoCoin);
+        }
+        //更新用户当前硬币总数
+        userCoinService.updateUserCoinsAmount(userId, (userCoinsAmount-amount));
+    }
+
+    @Override
+    public Map<String, Object> getVideoCoins(Long videoId, Long userId) {
+        Long count = videoMapper.getVideoCoinsAmount(videoId);
+        VideoCoin videoCollection = videoMapper.getVideoCoinByVideoIdAndUserId(videoId, userId);
         boolean like = videoCollection != null;
         Map<String, Object> result = new HashMap<>();
         result.put("count", count);

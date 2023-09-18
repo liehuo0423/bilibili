@@ -1,10 +1,7 @@
 package com.bilibili.controller;
 
 import com.bilibili.controller.support.UserSupport;
-import com.bilibili.domain.PageResult;
-import com.bilibili.domain.Response;
-import com.bilibili.domain.Video;
-import com.bilibili.domain.VideoCollection;
+import com.bilibili.domain.*;
 import com.bilibili.service.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -105,6 +102,29 @@ public class VideoController {
             userId = userSupport.getCurrentUserId();
         }catch (Exception ignored){}
         Map<String, Object> result = videoService.getVideoCollections(videoId, userId);
+        return new Response<>(result);
+    }
+
+    /**
+     * 视频投币
+     */
+    @PostMapping("/video-coins")
+    public Response<String> addVideoCoins(@RequestBody VideoCoin videoCoin){
+        Long userId = userSupport.getCurrentUserId();
+        videoService.addVideoCoins(videoCoin, userId);
+        return Response.success();
+    }
+
+    /**
+     * 查询视频投币数量
+     */
+    @GetMapping("/video-coins")
+    public Response<Map<String, Object>> getVideoCoins(@RequestParam Long videoId){
+        Long userId = null;
+        try{
+            userId = userSupport.getCurrentUserId();
+        }catch (Exception ignored){}
+        Map<String, Object> result = videoService.getVideoCoins(videoId, userId);
         return new Response<>(result);
     }
 
