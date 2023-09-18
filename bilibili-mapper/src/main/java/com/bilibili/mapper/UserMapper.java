@@ -48,4 +48,6 @@ public interface UserMapper {
                             @Param("createTime") Date createTime);
 
     RefreshToken getRefreshTokenDetail(String refreshToken);
+
+    List<UserInfo> batchGetUserInfoByUserIds(Set<Long> userIdList);
 }

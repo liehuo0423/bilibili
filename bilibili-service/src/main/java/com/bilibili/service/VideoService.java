@@ -1,9 +1,6 @@
 package com.bilibili.service;
 
-import com.bilibili.domain.PageResult;
-import com.bilibili.domain.Video;
-import com.bilibili.domain.VideoCoin;
-import com.bilibili.domain.VideoCollection;
+import com.bilibili.domain.*;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,4 +38,8 @@ public interface VideoService {
     void addVideoCoins(VideoCoin videoCoin, Long userId);
 
     Map<String, Object> getVideoCoins(Long videoId, Long userId);
+
+    void addVideoComment(VideoComment videoComment, Long userId);
+
+    PageResult<VideoComment> pageListVideoComments(Integer size, Integer no, Long videoId);
 }

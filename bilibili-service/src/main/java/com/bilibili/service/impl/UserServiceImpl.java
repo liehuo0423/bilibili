@@ -208,6 +208,11 @@ public class UserServiceImpl implements UserService {
         return accessToken;
     }
 
+    @Override
+    public List<UserInfo> batchGetUserInfoByUserIds(Set<Long> userIdList) {
+        return userMapper.batchGetUserInfoByUserIds(userIdList);
+    }
+
     public static boolean isMobile(final String phone) {
         Pattern pattern = Pattern.compile("^[1][3,4,5,7,8][0-9]{9}$"); // 验证手机号
         return pattern.matcher(phone).matches();

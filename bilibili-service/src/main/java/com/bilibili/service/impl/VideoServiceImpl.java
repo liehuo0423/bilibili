@@ -4,6 +4,7 @@ import com.bilibili.domain.*;
 import com.bilibili.domain.exception.ConditionException;
 import com.bilibili.mapper.VideoMapper;
 import com.bilibili.service.UserCoinService;
+import com.bilibili.service.UserService;
 import com.bilibili.service.VideoService;
 import com.bilibili.utils.FastDFSUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author 于鑫瑞
@@ -27,6 +29,9 @@ public class VideoServiceImpl implements VideoService {
 
     @Autowired
     private UserCoinService userCoinService;
+
+    @Autowired
+    private UserService userService;
 
     @Override
     @Transactional
@@ -182,5 +187,62 @@ public class VideoServiceImpl implements VideoService {
         result.put("count", count);
         result.put("like", like);
         return result;
+    }
+
+    @Override
+    public void addVideoComment(VideoComment videoComment, Long userId) {
+        Long videoId = videoComment.getVideoId();
+        if(videoId == null){
+            throw new ConditionException("参数异常！");
+        }
+        Video video = videoMapper.getVideoById(videoId);
+        if(video == null){
+            throw new ConditionException("非法视频！");
+        }
+        videoComment.setUserId(userId);
+        videoComment.setCreateTime(new Date());
+        videoMapper.addVideoComment(videoComment);
+    }
+
+    @Override
+    public PageResult<VideoComment> pageListVideoComments(Integer size, Integer no, Long videoId) {
+        Video video = videoMapper.getVideoById(videoId);
+        if(video == null){
+            throw new ConditionException("非法视频！");
+        }
+        Map<String, Object> params = new HashMap<>();
+        params.put("start", (no-1)*size);
+        params.put("limit", size);
+        params.put("videoId", videoId);
+        Integer total = videoMapper.pageCountVideoComments(params);
+        List<VideoComment> list = new ArrayList<>();
+        if(total > 0){
+            list = videoMapper.pageListVideoComments(params);
+            //批量查询二级评论
+            List<Long> parentIdList = list.stream().map(VideoComment::getId).collect(Collectors.toList());
+            List<VideoComment> childCommentList = videoMapper.batchGetVideoCommentsByRootIds(parentIdList);
+            //批量查询用户信息
+            Set<Long> userIdList = list.stream().map(VideoComment::getUserId).collect(Collectors.toSet());
+            Set<Long> replyUserIdList = childCommentList.stream().map(VideoComment::getUserId).collect(Collectors.toSet());
+            Set<Long> childUserIdList = childCommentList.stream().map(VideoComment::getReplyUserId).collect(Collectors.toSet());
+            userIdList.addAll(replyUserIdList);
+            userIdList.addAll(childUserIdList);
+            List<UserInfo> userInfoList = userService.batchGetUserInfoByUserIds(userIdList);
+            Map<Long, UserInfo> userInfoMap = userInfoList.stream().collect(Collectors.toMap(UserInfo :: getUserId, userInfo -> userInfo));
+            list.forEach(comment -> {
+                Long id = comment.getId();
+                List<VideoComment> childList = new ArrayList<>();
+                childCommentList.forEach(child -> {
+                    if(id.equals(child.getRootId())){
+                        child.setUserInfo(userInfoMap.get(child.getUserId()));
+                        child.setReplyUserInfo(userInfoMap.get(child.getReplyUserId()));
+                        childList.add(child);
+                    }
+                });
+                comment.setChildList(childList);
+                comment.setUserInfo(userInfoMap.get(comment.getUserId()));
+            });
+        }
+        return new PageResult<>(total, list);
     }
 }

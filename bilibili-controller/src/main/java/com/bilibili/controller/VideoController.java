@@ -128,5 +128,25 @@ public class VideoController {
         return new Response<>(result);
     }
 
+    /**
+     * 添加视频评论
+     */
+    @PostMapping("/video-comments")
+    public Response<String> addVideoComment(@RequestBody VideoComment videoComment){
+        Long userId = userSupport.getCurrentUserId();
+        videoService.addVideoComment(videoComment, userId);
+        return Response.success();
+    }
+
+    /**
+     * 分页查询视频评论
+     */
+    @GetMapping("/video-comments")
+    public Response<PageResult<VideoComment>> pageListVideoComments(@RequestParam Integer size,
+                                                                        @RequestParam Integer no,
+                                                                        @RequestParam Long videoId){
+        PageResult<VideoComment> result = videoService.pageListVideoComments(size, no, videoId);
+        return new Response<>(result);
+    }
 
 }
