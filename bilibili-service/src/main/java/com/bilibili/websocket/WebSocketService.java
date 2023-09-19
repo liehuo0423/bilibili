@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -116,6 +117,19 @@ public class WebSocketService {
             } catch (Exception e) {
                 logger.error("弹幕接收出现问题");
                 e.printStackTrace();
+            }
+        }
+    }
+    //或直接指定时间间隔，例如：5秒
+    @Scheduled(fixedRate=5000)
+    private void noticeOnlineCount() throws IOException {
+        for(Map.Entry<String, WebSocketService> entry : WebSocketService.WEBSOCKET_MAP.entrySet()){
+            WebSocketService webSocketService = entry.getValue();
+            if(webSocketService.session.isOpen()){
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("onlineCount", ONLINE_COUNT.get());
+                jsonObject.put("msg", "当前在线人数为" + ONLINE_COUNT.get());
+                webSocketService.sendMessage(jsonObject.toJSONString());
             }
         }
     }
