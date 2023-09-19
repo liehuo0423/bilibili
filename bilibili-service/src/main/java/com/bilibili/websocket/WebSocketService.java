@@ -42,7 +42,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class WebSocketService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private static final AtomicInteger ONLINE_COUNT = new AtomicInteger(0);
-    private ConcurrentMap<String, WebSocketService> WEBSOCKET_MAP = new ConcurrentHashMap<>();
+    public static final ConcurrentMap<String, WebSocketService> WEBSOCKET_MAP = new ConcurrentHashMap<>();
     private Session session;
     private String sessionId;
     private Long userId;
@@ -75,7 +75,7 @@ public class WebSocketService {
         }
     }
 
-    private void sendMessage(String message) throws IOException {
+    public void sendMessage(String message) throws IOException {
         this.session.getBasicRemote().sendText(message);
     }
 
@@ -96,9 +96,12 @@ public class WebSocketService {
                 //群发消息
                 for (Map.Entry<String, WebSocketService> entry : WEBSOCKET_MAP.entrySet()) {
                     WebSocketService webSocketService = entry.getValue();
+                    DefaultMQProducer danmusProducer = (DefaultMQProducer)APPLICATION_CONTEXT.getBean("danmusProducer");
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("message", message);
                     jsonObject.put("sessionId", webSocketService.getSessionId());
+                    Message msg = new Message(UserMomentsConstant.TOPIC_DANMUS, jsonObject.toJSONString().getBytes(StandardCharsets.UTF_8));
+                    RocketMQUtil.asyncSendMsg(danmusProducer, msg);
                 }
                 if (this.userId != null) {
                     //保存弹幕到数据库
