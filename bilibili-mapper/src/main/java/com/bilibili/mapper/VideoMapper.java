@@ -57,7 +57,22 @@ public interface VideoMapper {
 
     List<VideoComment> pageListVideoComments(Map<String, Object> params);
 
-    List<VideoComment> batchGetVideoCommentsByRootIds(List<Long> parentIdList);
+    List<VideoComment> batchGetVideoCommentsByRootIds(@Param("rootIdList") List<Long> parentIdList);
 
     Video getVideoDetails(Long videoId);
+
+    VideoView getVideoView(Map<String, Object> params);
+
+    void addVideoView(VideoView videoView);
+
+    Integer getVideoViewCounts(Long videoId);
+
+    List<UserPreference> getAllUserPreference();
+
+    List<Video> batchGetVideosByIds(@Param("idList") List<Long> idList);
+
+    List<VideoTag> getVideoTagsByVideoId(Long videoId);
+
+    Integer deleteVideoTags(@Param("tagIdList") List<Long> tagIdList,
+                            @Param("videoId") Long videoId);
 }

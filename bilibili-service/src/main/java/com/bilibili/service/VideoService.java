@@ -1,6 +1,7 @@
 package com.bilibili.service;
 
 import com.bilibili.domain.*;
+import org.apache.mahout.cf.taste.common.TasteException;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,4 +45,14 @@ public interface VideoService {
     PageResult<VideoComment> pageListVideoComments(Integer size, Integer no, Long videoId);
 
     Map<String, Object> getVideoDetails(Long videoId);
+
+    void addVideoView(VideoView videoView, HttpServletRequest request);
+
+    Integer getVideoViewCounts(Long videoId);
+
+    List<Video> recommend(Long userId) throws TasteException;
+
+    List<VideoTag> getVideoTagsByVideoId(Long videoId);
+
+    void deleteVideoTags(List<Long> toJavaList, Long videoId);
 }
