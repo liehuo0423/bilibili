@@ -1,7 +1,11 @@
 package com.bilibili.controller;
 
+import com.bilibili.domain.Response;
+import com.bilibili.domain.Video;
 import com.bilibili.service.DemoService;
+import com.bilibili.service.ElasticSearchService;
 import com.bilibili.utils.FastDFSUtil;
+import org.elasticsearch.action.admin.indices.resolve.ResolveIndexAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +21,8 @@ public class DemoController {
     private DemoService demoService;
     @Autowired
     private FastDFSUtil fastDFSUtil;
+    @Autowired
+    private ElasticSearchService elasticSearchService;
     @GetMapping("{id}")
     public Long query(@PathVariable Long id){
         return demoService.query(id);
@@ -24,5 +30,10 @@ public class DemoController {
     @PostMapping("/slices")
     public void slices(@RequestBody MultipartFile file) throws Exception {
         fastDFSUtil.convertFileToSlices(file);
+    }
+    @GetMapping("es-videos")
+    public Response<Video> getVideos(@RequestParam String keyword){
+        Video videos = elasticSearchService.getVideos(keyword);
+        return new Response<>(videos);
     }
 }

@@ -2,7 +2,9 @@ package com.bilibili.controller;
 
 import com.bilibili.controller.support.UserSupport;
 import com.bilibili.domain.*;
+import com.bilibili.service.ElasticSearchService;
 import com.bilibili.service.VideoService;
+import com.bilibili.service.impl.ElasticSearchServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,11 +22,14 @@ public class VideoController {
     private UserSupport userSupport;
     @Autowired
     private VideoService videoService;
+    @Autowired
+    private ElasticSearchService elasticSearchService;
     @PostMapping("/videos")
     public Response<String> addVideos(@RequestBody Video video){
         Long userId = userSupport.getCurrentUserId();
         video.setUserId(userId);
         videoService.addVideos(video);
+        elasticSearchService.addVideo(video);
         return Response.success();
     }
 
@@ -157,5 +162,7 @@ public class VideoController {
         Map<String, Object> result = videoService.getVideoDetails(videoId);
         return new Response<>(result);
     }
+
+
 
 }

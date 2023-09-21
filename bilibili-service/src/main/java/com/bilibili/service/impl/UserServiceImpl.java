@@ -5,6 +5,7 @@ import com.bilibili.domain.*;
 import com.bilibili.domain.constant.UserConstant;
 import com.bilibili.domain.exception.ConditionException;
 import com.bilibili.mapper.UserMapper;
+import com.bilibili.service.ElasticSearchService;
 import com.bilibili.service.UserAuthService;
 import com.bilibili.service.UserService;
 import com.bilibili.utils.MD5Util;
@@ -13,6 +14,7 @@ import com.bilibili.utils.TokenUtil;
 import com.mysql.cj.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.awt.print.PrinterJob;
 import java.util.*;
@@ -29,8 +31,11 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
     @Autowired
     private UserAuthService userAuthService;
+    @Autowired
+    private ElasticSearchService elasticSearchService;
 
     @Override
+    @Transactional
     public void addUser(User user) {
         String phone = user.getPhone();
 
@@ -58,23 +63,23 @@ public class UserServiceImpl implements UserService {
         String salt = String.valueOf(now.getTime());
         String md5Password = MD5Util.sign(rawPassword, salt, "utf8");
 
-        User newUser = new User();
-        newUser.setPhone(phone);
-        newUser.setPassword(md5Password);
-        newUser.setSalt(salt);
-        newUser.setCreateTime(now);
-        userMapper.addUser(newUser);
+        user.setPhone(phone);
+        user.setPassword(md5Password);
+        user.setSalt(salt);
+        user.setCreateTime(now);
+        userMapper.addUser(user);
 
         //添加用户信息
         UserInfo userInfo = new UserInfo();
-        userInfo.setUserId(newUser.getId());
+        userInfo.setUserId(user.getId());
         userInfo.setGender(UserConstant.GENDER_UNKNOW);
         userInfo.setBirth(UserConstant.DEFAULT_BIRTH);
         userInfo.setNick(UserConstant.DEFAULT_NICK + "_" + UUID.randomUUID());
         userInfo.setCreateTime(now);
         userMapper.addUserInfo(userInfo);
-
-        userAuthService.addUserDefaultRole(newUser.getId());
+        userAuthService.addUserDefaultRole(user.getId());
+        //同步用户信息数据到es
+        elasticSearchService.addUseInfo(userInfo);
     }
 
     @Override

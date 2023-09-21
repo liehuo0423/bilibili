@@ -40,12 +40,12 @@ public class VideoServiceImpl implements VideoService {
         video.setCreateTime(new Date());
         videoMapper.addVideos(video);
         Long videoId = video.getId();
-        List<VideoTag> tagList = video.getVideoTagList();
-        tagList.forEach(item -> {
-            item.setCreateTime(now);
-            item.setVideoId(videoId);
-        });
-        videoMapper.batchAddVideoTags(tagList);
+//        List<VideoTag> tagList = video.getVideoTagList();
+//        tagList.forEach(item -> {
+//            item.setCreateTime(now);
+//            item.setVideoId(videoId);
+//        });
+//        videoMapper.batchAddVideoTags(tagList);
     }
 
     @Override

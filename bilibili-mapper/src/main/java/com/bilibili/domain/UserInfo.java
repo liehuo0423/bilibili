@@ -1,5 +1,10 @@
 package com.bilibili.domain;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
+
 import javax.xml.crypto.Data;
 import java.util.Date;
 
@@ -7,16 +12,21 @@ import java.util.Date;
  * @author 于鑫瑞
  * @version 1.0.0
  */
+@Document(indexName = "user-infos")
 public class UserInfo {
+    @Id
     private Long id;
     private Long userId;
+    @Field(type = FieldType.Text)
     private String nick;
     private String avatar;
     private String sign;
     private String gender;
     private String birth;
     private Boolean followed;
+    @Field(type = FieldType.Date)
     private Date createTime;
+    @Field(type = FieldType.Date)
     private Date updateTime;
 
     public Long getId() {
