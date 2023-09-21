@@ -21,7 +21,7 @@ public class SystemController {
     @Autowired
     private ElasticSearchService elasticSearchService;
 
-    @GetMapping("/contents")
+    @GetMapping(value = "/contents",produces = {"application/json;charset=UTF-8"})
     public Response<List<Map<String, Object>>> getContents(@RequestParam String keyword,
                                                            @RequestParam Integer pageNo,
                                                            @RequestParam Integer pageSize) throws IOException {

@@ -28,7 +28,7 @@ public class UserMomentsController {
 
     @ApiLimitedRole(limitedRoleCodeList = {AuthRoleConstant.ROLE_LV0})
     @DataLimited
-    @PostMapping("/user-moments")
+    @PostMapping(value = "/user-moments",produces = {"application/json;charset=UTF-8"})
     public Response<String> addUserMoments(@RequestBody UserMoment userMoment) throws Exception {
         Long userId = userSupport.getCurrentUserId();
         userMoment.setUserId(userId);

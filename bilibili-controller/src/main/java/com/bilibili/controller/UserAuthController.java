@@ -18,7 +18,7 @@ public class UserAuthController {
     private UserSupport userSupport;
     @Autowired
     private UserAuthService userAuthService;
-    @GetMapping("user-authorities")
+    @GetMapping(value = "/user-authorities",produces = {"application/json;charset=UTF-8"})
     public Response<UserAuthorities> getUserAuthorities(){
         Long userId = userSupport.getCurrentUserId();
         UserAuthorities userAuthorities = userAuthService.getUserAuthorities(userId);

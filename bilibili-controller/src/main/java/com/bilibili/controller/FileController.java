@@ -14,13 +14,13 @@ public class FileController {
     @Autowired
     private FileService fileService;
 
-    @PostMapping("/md5files")
+    @PostMapping(value = "/md5files",produces = {"application/json;charset=UTF-8"})
     public Response<String> getFileMD5(MultipartFile file) throws Exception {
         String fileMD5 = fileService.getFileMD5(file);
         return new Response<>(fileMD5);
     }
 
-    @PutMapping("/file-slices")
+    @PutMapping(value = "/file-slices",produces = {"application/json;charset=UTF-8"})
     public Response<String> uploadFileBySlices(MultipartFile slice,
                                                    String fileMd5,
                                                    Integer sliceNo,

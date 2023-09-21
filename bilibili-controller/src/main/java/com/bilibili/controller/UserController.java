@@ -27,42 +27,42 @@ public class UserController {
     @Autowired
     private UserFollowingService userFollowingService;
 
-    @GetMapping("/users")
+    @GetMapping(value = "/users",produces = {"application/json;charset=UTF-8"})
     public Response<User> getCurrentId(){
         Long userId = userSupport.getCurrentUserId();
         User user = userService.getUserInfo(userId);
         return new Response<>(user);
     }
-    @GetMapping("/rsa-pds")
+    @GetMapping(value = "/rsa-pds",produces = {"application/json;charset=UTF-8"})
     public Response<String> getPublicKey(){
         String publicKeyStr = RSAUtil.getPublicKeyStr();
         return Response.success(publicKeyStr);
     }
 
-    @PostMapping("/users")
+    @PostMapping(value = "/users",produces = {"application/json;charset=UTF-8"})
     public Response<String> saveUser(@RequestBody User user){
         userService.addUser(user);
         return Response.success();
     }
 
-    @PostMapping("/user-tokens")
+    @PostMapping(value = "/user-tokens",produces = {"application/json;charset=UTF-8"})
     public Response<String> login(@RequestBody User user) throws Exception {
         String token = userService.login(user);
         return Response.success(token);
     }
 
-    @PostMapping("/user-dts")
+    @PostMapping(value = "/user-dts",produces = {"application/json;charset=UTF-8"})
     public Response<Map<String,Object>> loginForDts(@RequestBody User user) throws Exception {
        Map<String ,Object> map = userService.loginForDts(user);
        return new Response<>(map);
     }
-    @PostMapping("/access-tokens")
+    @PostMapping(value = "/access-tokens",produces = {"application/json;charset=UTF-8"})
     public Response<String> refreshAccessToken(HttpServletRequest request) throws Exception {
         String refreshToken = request.getHeader("refreshToken");
         String accessToken = userService.refreshAccessToken(refreshToken);
         return new Response<>(accessToken);
     }
-    @DeleteMapping("refresh-tokens")
+    @DeleteMapping(value = "refresh-tokens",produces = {"application/json;charset=UTF-8"})
     public Response<String> logout(HttpServletRequest request){
         String refreshToken = request.getHeader("refreshToken");
         Long userId = userSupport.getCurrentUserId();

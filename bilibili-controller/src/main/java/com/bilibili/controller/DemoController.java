@@ -31,7 +31,7 @@ public class DemoController {
     public void slices(@RequestBody MultipartFile file) throws Exception {
         fastDFSUtil.convertFileToSlices(file);
     }
-    @GetMapping("es-videos")
+    @GetMapping(value = "es-videos",produces = {"application/json;charset=UTF-8"})
     public Response<Video> getVideos(@RequestParam String keyword){
         Video videos = elasticSearchService.getVideos(keyword);
         return new Response<>(videos);

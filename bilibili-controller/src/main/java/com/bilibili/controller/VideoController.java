@@ -29,7 +29,7 @@ public class VideoController {
     @Autowired
     private ElasticSearchService elasticSearchService;
 
-    @PostMapping("/videos")
+    @PostMapping(value = "/videos",produces = {"application/json;charset=UTF-8"})
     public Response<String> addVideos(@RequestBody Video video) {
         Long userId = userSupport.getCurrentUserId();
         video.setUserId(userId);
@@ -38,13 +38,13 @@ public class VideoController {
         return Response.success();
     }
 
-    @GetMapping("/videos")
+    @GetMapping(value = "/videos",produces = {"application/json;charset=UTF-8"})
     public Response<PageResult<Video>> pageListVideo(Integer size, Integer no, String area) {
         PageResult<Video> result = videoService.pageListVideos(size, no, area);
         return new Response<>(result);
     }
 
-    @GetMapping("/video-slices")
+    @GetMapping(value = "/video-slices")
     public void viewVideoOnlineBySlices(HttpServletRequest request, HttpServletResponse response, String url) throws Exception {
         videoService.viewVideoOnlineBySlices(request, response, url);
     }
@@ -52,7 +52,7 @@ public class VideoController {
     /**
      * 点赞视频
      */
-    @PostMapping("/video-likes")
+    @PostMapping(value = "/video-likes",produces = {"application/json;charset=UTF-8"})
     public Response<String> addVideoLike(@RequestParam Long videoId) {
         Long userId = userSupport.getCurrentUserId();
         videoService.addVideoLike(videoId, userId);
@@ -62,7 +62,7 @@ public class VideoController {
     /**
      * 取消点赞视频
      */
-    @DeleteMapping("/video-likes")
+    @DeleteMapping(value = "/video-likes",produces = {"application/json;charset=UTF-8"})
     public Response<String> deleteVideoLike(@RequestParam Long videoId) {
         Long userId = userSupport.getCurrentUserId();
         videoService.deleteVideoLike(videoId, userId);
@@ -72,7 +72,7 @@ public class VideoController {
     /**
      * 查询视频点赞数量
      */
-    @GetMapping("/video-likes")
+    @GetMapping(value = "/video-likes",produces = {"application/json;charset=UTF-8"})
     public Response<Map<String, Object>> getVideoLikes(@RequestParam Long videoId) {
         Long userId = null;
         try {
@@ -86,7 +86,7 @@ public class VideoController {
     /**
      * 收藏视频
      */
-    @PostMapping("/video-collections")
+    @PostMapping(value = "/video-collections",produces = {"application/json;charset=UTF-8"})
     public Response<String> addVideoCollection(@RequestBody VideoCollection videoCollection) {
         Long userId = userSupport.getCurrentUserId();
         videoService.addVideoCollection(videoCollection, userId);
@@ -96,7 +96,7 @@ public class VideoController {
     /**
      * 取消收藏视频
      */
-    @DeleteMapping("/video-collections")
+    @DeleteMapping(value = "/video-collections",produces = {"application/json;charset=UTF-8"})
     public Response<String> deleteVideoCollection(@RequestParam Long videoId) {
         Long userId = userSupport.getCurrentUserId();
         videoService.deleteVideoCollection(videoId, userId);
@@ -106,7 +106,7 @@ public class VideoController {
     /**
      * 查询视频收藏数量
      */
-    @GetMapping("/video-collections")
+    @GetMapping(value = "/video-collections",produces = {"application/json;charset=UTF-8"})
     public Response<Map<String, Object>> getVideoCollections(@RequestParam Long videoId) {
         Long userId = null;
         try {
@@ -120,7 +120,7 @@ public class VideoController {
     /**
      * 视频投币
      */
-    @PostMapping("/video-coins")
+    @PostMapping(value = "/video-coins",produces = {"application/json;charset=UTF-8"})
     public Response<String> addVideoCoins(@RequestBody VideoCoin videoCoin) {
         Long userId = userSupport.getCurrentUserId();
         videoService.addVideoCoins(videoCoin, userId);
@@ -130,7 +130,7 @@ public class VideoController {
     /**
      * 查询视频投币数量
      */
-    @GetMapping("/video-coins")
+    @GetMapping(value = "/video-coins",produces = {"application/json;charset=UTF-8"})
     public Response<Map<String, Object>> getVideoCoins(@RequestParam Long videoId) {
         Long userId = null;
         try {
@@ -144,7 +144,7 @@ public class VideoController {
     /**
      * 添加视频评论
      */
-    @PostMapping("/video-comments")
+    @PostMapping(value = "/video-comments",produces = {"application/json;charset=UTF-8"})
     public Response<String> addVideoComment(@RequestBody VideoComment videoComment) {
         Long userId = userSupport.getCurrentUserId();
         videoService.addVideoComment(videoComment, userId);
@@ -154,7 +154,7 @@ public class VideoController {
     /**
      * 分页查询视频评论
      */
-    @GetMapping("/video-comments")
+    @GetMapping(value = "/video-comments",produces = {"application/json;charset=UTF-8"})
     public Response<PageResult<VideoComment>> pageListVideoComments(@RequestParam Integer size,
                                                                     @RequestParam Integer no,
                                                                     @RequestParam Long videoId) {
@@ -165,7 +165,7 @@ public class VideoController {
     /**
      * 获取视频详情
      */
-    @GetMapping("/video-details")
+    @GetMapping(value = "/video-details",produces = {"application/json;charset=UTF-8"})
     public Response<Map<String, Object>> getVideoDetails(@RequestParam Long videoId) {
         Map<String, Object> result = videoService.getVideoDetails(videoId);
         return new Response<>(result);
@@ -174,7 +174,7 @@ public class VideoController {
     /**
      * 添加视频观看记录
      */
-    @PostMapping("/video-views")
+    @PostMapping(value = "/video-views",produces = {"application/json;charset=UTF-8"})
     public Response<String> addVideoView(@RequestBody VideoView videoView,
                                          HttpServletRequest request) {
         Long userId;
@@ -191,7 +191,7 @@ public class VideoController {
     /**
      * 查询视频播放量
      */
-    @GetMapping("/video-view-counts")
+    @GetMapping(value = "/video-view-counts",produces = {"application/json;charset=UTF-8"})
     public Response<Integer> getVideoViewCounts(@RequestParam Long videoId) {
         Integer count = videoService.getVideoViewCounts(videoId);
         return new Response<>(count);
@@ -200,7 +200,7 @@ public class VideoController {
     /**
      * 视频内容推荐
      */
-    @GetMapping("/recommendations")
+    @GetMapping(value = "/recommendations",produces = {"application/json;charset=UTF-8"})
     public Response<List<Video>> recommend() throws TasteException {
         Long userId = userSupport.getCurrentUserId();
         List<Video> list = videoService.recommend(userId);
@@ -210,7 +210,7 @@ public class VideoController {
     /**
      * 查询视频标签
      */
-    @GetMapping("/video-tags")
+    @GetMapping(value = "/video-tags",produces = {"application/json;charset=UTF-8"})
     public Response<List<VideoTag>> getVideoTagsByVideoId(@RequestParam Long videoId) {
         List<VideoTag> list = videoService.getVideoTagsByVideoId(videoId);
         return new Response<>(list);
@@ -219,7 +219,7 @@ public class VideoController {
     /**
      * 删除视频标签
      */
-    @DeleteMapping("/video-tags")
+    @DeleteMapping(value = "/video-tags",produces = {"application/json;charset=UTF-8"})
     public Response<String> deleteVideoTags(@RequestBody JSONObject params) {
         String tagIdList = params.getString("tagIdList");
         Long videoId = params.getLong("videoId");

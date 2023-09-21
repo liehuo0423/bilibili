@@ -15,39 +15,39 @@ import java.util.List;
  * @version 1.0.0
  */
 @RestController
-@RequestMapping("users")
+@RequestMapping("/users")
 public class UserFollowingController {
     @Autowired
     private UserSupport userSupport;
     @Autowired
     private UserFollowingService userFollowingService;
-    @PostMapping("/followings")
+    @PostMapping(value = "/followings",produces = {"application/json;charset=UTF-8"})
     public Response<String> addUserFollowing(@RequestBody UserFollowing userFollowing){
         Long userId = userSupport.getCurrentUserId();
         userFollowing.setUserId(userId);
         userFollowingService.addUserFollowing(userFollowing);
         return Response.success();
     }
-    @GetMapping("/fans")
+    @GetMapping(value = "/fans",produces = {"application/json;charset=UTF-8"})
     public Response<List<UserFollowing>> getFansList(){
         Long userId = userSupport.getCurrentUserId();
         List<UserFollowing> result = userFollowingService.getUserFans(userId);
         return new Response<>(result);
     }
-    @GetMapping("/followings")
+    @GetMapping(value = "/followings",produces = {"application/json;charset=UTF-8"})
     public Response<List<FollowingGroup>> getFollowingGroup(){
         Long userId = userSupport.getCurrentUserId();
         List<FollowingGroup> result = userFollowingService.getUserFollowing(userId);
         return new Response<>(result);
     }
-    @PostMapping("/following-groups")
+    @PostMapping(value = "/following-groups",produces = {"application/json;charset=UTF-8"})
     public Response<Long> addFollowingGroup(@RequestBody FollowingGroup followingGroup){
         Long userId = userSupport.getCurrentUserId();
         followingGroup.setUserId(userId);
         Long groupId = userFollowingService.addUserFollowingGroups(followingGroup);
         return new Response<>(groupId);
     }
-    @GetMapping("/following-groups")
+    @GetMapping(value = "/following-groups",produces = {"application/json;charset=UTF-8"})
     public Response<List<FollowingGroup>> getUserFollowingGroups(){
         Long userId = userSupport.getCurrentUserId();
         List<FollowingGroup> followingGroupList = userFollowingService.getUserFollowingGroups(userId);

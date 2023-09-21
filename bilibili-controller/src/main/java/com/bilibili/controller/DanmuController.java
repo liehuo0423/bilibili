@@ -24,7 +24,7 @@ public class DanmuController {
     @Autowired
     private UserSupport userSupport;
 
-    @GetMapping("/danmus")
+    @GetMapping(value = "/danmus",produces = {"application/json;charset=UTF-8"})
     public Response<List<Danmu>> getDanmus(@RequestParam Long videoId,
                                                String startTime,
                                                String endTime) throws Exception {
